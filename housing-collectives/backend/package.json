@@ -1,0 +1,47 @@
+{
+  "name": "housing-collectives-api",
+  "version": "1.0.0",
+  "description": "European Housing Collectives Community API",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "test": "jest",
+    "db:migrate": "node src/config/migrate.js",
+    "db:seed": "node src/config/seed.js"
+  },
+  "keywords": [
+    "housing",
+    "collectives",
+    "community",
+    "api"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "pg": "^8.11.3",
+    "bcrypt": "^5.1.1",
+    "jsonwebtoken": "^9.0.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "helmet": "^7.1.0",
+    "express-rate-limit": "^7.1.5",
+    "morgan": "^1.10.0",
+    "joi": "^17.11.0",
+    "cookie-parser": "^1.4.6",
+    "uuid": "^9.0.1",
+    "socket.io": "^4.7.2",
+    "multer": "^1.4.5-lts.1",
+    "sharp": "^0.33.1",
+    "nodemailer": "^6.9.8"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2",
+    "jest": "^29.7.0",
+    "supertest": "^6.3.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
