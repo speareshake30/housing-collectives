@@ -1,0 +1,1152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenClaw Council · Day 1 Progress</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        :root {
+            --bg: #0a0e17;
+            --surface: #111827;
+            --surface-light: #1a2332;
+            --surface-hover: #1e2940;
+            --border: #1e2d3d;
+            --text: #e2e8f0;
+            --text-muted: #64748b;
+            --text-dim: #475569;
+            --accent: #2dd4bf;
+            --accent-dim: rgba(45, 212, 191, 0.15);
+            --lane-a: #3b82f6;
+            --lane-a-dim: rgba(59, 130, 246, 0.12);
+            --lane-b: #f59e0b;
+            --lane-b-dim: rgba(245, 158, 11, 0.12);
+            --approved: #22c55e;
+            --approved-dim: rgba(34, 197, 94, 0.12);
+            --hold: #ef4444;
+            --hold-dim: rgba(239, 68, 68, 0.12);
+            --pending: #a78bfa;
+            --pending-dim: rgba(167, 139, 250, 0.12);
+            --security: #f43f5e;
+            --security-dim: rgba(244, 63, 94, 0.12);
+            --nightmode: #8b5cf6;
+            --nightmode-dim: rgba(139, 92, 246, 0.12);
+            --in-progress: #38bdf8;
+            --in-progress-dim: rgba(56, 189, 248, 0.12);
+        }
+        
+        body {
+            background: var(--bg);
+            min-height: 100vh;
+            padding: 24px 16px;
+            font-family: 'Inter', -apple-system, sans-serif;
+            color: var(--text);
+            line-height: 1.5;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+        
+        .header-subtitle {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            color: var(--accent);
+            letter-spacing: 2px;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+        }
+        
+        .header h1 {
+            font-size: 22px;
+            font-weight: 700;
+            margin: 0;
+            letter-spacing: -0.5px;
+        }
+        
+        .header-meta {
+            font-size: 10px;
+            color: var(--text-muted);
+            margin-top: 6px;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 3px;
+            background: var(--surface-light);
+            border-radius: 2px;
+            margin-top: 12px;
+        }
+        
+        .progress-fill {
+            width: 55%;
+            height: 100%;
+            background: var(--accent);
+            border-radius: 2px;
+        }
+        
+        .progress-label {
+            font-size: 8px;
+            color: var(--text-dim);
+            margin-top: 4px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        .container {
+            max-width: 720px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        
+        .section-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .section-card.accent { border-left: 3px solid var(--accent); }
+        .section-card.approved { border-left: 3px solid var(--approved); }
+        .section-card.lane-a { border-left: 3px solid var(--lane-a); }
+        .section-card.lane-b { border-left: 3px solid var(--lane-b); }
+        .section-card.nightmode { border-left: 3px solid var(--nightmode); }
+        .section-card.pending { border-left: 3px solid var(--pending); }
+        .section-card.in-progress { border-left: 3px solid var(--in-progress); }
+        
+        .section-header {
+            padding: 14px 18px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section-icon {
+            font-size: 18px;
+        }
+        
+        .section-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--accent);
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            flex: 1;
+        }
+        
+        .section-card.approved .section-title { color: var(--approved); }
+        .section-card.lane-a .section-title { color: var(--lane-a); }
+        .section-card.lane-b .section-title { color: var(--lane-b); }
+        .section-card.nightmode .section-title { color: var(--nightmode); }
+        .section-card.pending .section-title { color: var(--pending); }
+        .section-card.in-progress .section-title { color: var(--in-progress); }
+        
+        .section-body {
+            padding: 14px 18px;
+        }
+        
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 1.2px;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace;
+            flex-shrink: 0;
+        }
+        
+        .status-badge.approved {
+            background: var(--approved-dim);
+            color: var(--approved);
+        }
+        
+        .status-badge.in-progress {
+            background: var(--in-progress-dim);
+            color: var(--in-progress);
+        }
+        
+        .status-badge.pending {
+            background: var(--pending-dim);
+            color: var(--pending);
+        }
+        
+        .status-badge.queued {
+            background: var(--pending-dim);
+            color: var(--pending);
+        }
+        
+        .status-badge.on-hold {
+            background: var(--hold-dim);
+            color: var(--hold);
+        }
+        
+        .status-badge.blocking {
+            background: var(--security-dim);
+            color: var(--security);
+        }
+        
+        .status-badge.designing {
+            background: var(--nightmode-dim);
+            color: var(--nightmode);
+        }
+        
+        .status-badge.scaffolded {
+            background: var(--nightmode-dim);
+            color: var(--nightmode);
+        }
+        
+        .pulse-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        
+        .status-badge.in-progress .pulse-dot {
+            background: var(--in-progress);
+        }
+        
+        .status-badge.blocking .pulse-dot {
+            background: var(--security);
+        }
+        
+        .flow-node {
+            background: var(--surface-light);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px 14px;
+            position: relative;
+        }
+        
+        .flow-node.active {
+            background: var(--surface-hover);
+            box-shadow: 0 0 20px rgba(45, 212, 191, 0.13);
+        }
+        
+        .flow-node.lane-a.active {
+            border-color: var(--lane-a);
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.13);
+        }
+        
+        .flow-node.lane-b.active {
+            border-color: var(--lane-b);
+            box-shadow: 0 0 20px rgba(245, 158, 11, 0.13);
+        }
+        
+        .lane-badge {
+            position: absolute;
+            top: -8px;
+            right: 10px;
+            font-size: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 3px;
+            letter-spacing: 1px;
+        }
+        
+        .lane-badge.a {
+            background: var(--lane-a-dim);
+            color: var(--lane-a);
+        }
+        
+        .lane-badge.b {
+            background: var(--lane-b-dim);
+            color: var(--lane-b);
+        }
+        
+        .flow-node-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 8px;
+        }
+        
+        .flow-node-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text);
+        }
+        
+        .flow-node-sub {
+            font-size: 10px;
+            color: var(--text-muted);
+            margin-top: 4px;
+            line-height: 1.5;
+            white-space: pre-line;
+        }
+        
+        .arrow {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2px 0;
+        }
+        
+        .arrow-label {
+            font-size: 8px;
+            color: var(--text-muted);
+            font-family: 'JetBrains Mono', monospace;
+            letter-spacing: 0.5px;
+            margin-bottom: 2px;
+        }
+        
+        .artifact-tag {
+            font-size: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--text-dim);
+            background: var(--bg);
+            padding: 2px 6px;
+            border-radius: 3px;
+            border: 1px solid var(--border);
+            display: inline-block;
+            margin: 2px;
+        }
+        
+        .milestone-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 4px 0;
+        }
+        
+        .milestone-id {
+            font-size: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--text-dim);
+            width: 28px;
+            flex-shrink: 0;
+        }
+        
+        .milestone-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            background: var(--approved);
+        }
+        
+        .milestone-title {
+            font-size: 10px;
+            color: var(--text);
+            flex: 1;
+        }
+        
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+        
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 8px;
+        }
+        
+        .grid-4 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 6px;
+        }
+        
+        .level-badge {
+            border-radius: 6px;
+            padding: 8px 10px;
+            text-align: center;
+        }
+        
+        .level-badge.l0 {
+            background: var(--approved-dim);
+        }
+        
+        .level-badge.l0 .level-num {
+            color: var(--approved);
+        }
+        
+        .level-badge.l1 {
+            background: var(--lane-b-dim);
+        }
+        
+        .level-badge.l1 .level-num {
+            color: var(--lane-b);
+        }
+        
+        .level-badge.l2 {
+            background: var(--security-dim);
+        }
+        
+        .level-badge.l2 .level-num {
+            color: var(--security);
+        }
+        
+        .level-num {
+            font-size: 9px;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+        }
+        
+        .level-label {
+            font-size: 10px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+        
+        .level-sub {
+            font-size: 8px;
+            color: var(--text-dim);
+        }
+        
+        .tag-list {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-top: 2px;
+        }
+        
+        .tag-item {
+            font-size: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--text-muted);
+            background: var(--bg);
+            padding: 3px 8px;
+            border-radius: 4px;
+            border: 1px solid var(--border);
+        }
+        
+        .blocker-banner {
+            background: var(--security-dim);
+            border-radius: 6px;
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid rgba(244, 63, 94, 0.13);
+            margin-top: 10px;
+        }
+        
+        .blocker-icon {
+            font-size: 14px;
+        }
+        
+        .blocker-label {
+            font-size: 9px;
+            font-weight: 700;
+            color: var(--security);
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        .blocker-text {
+            font-size: 9px;
+            color: var(--text-muted);
+        }
+        
+        .owner-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px 16px;
+        }
+        
+        .owner-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .owner-name {
+            font-size: 10px;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+        }
+        
+        .owner-name.cl2 {
+            color: var(--lane-a);
+        }
+        
+        .owner-name.cl5 {
+            color: var(--lane-b);
+        }
+        
+        .owner-count {
+            font-size: 8px;
+            color: var(--text-dim);
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        .owner-tasks {
+            font-size: 10px;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+        
+        .security-gate {
+            background: var(--security-dim);
+            border: 1px solid rgba(244, 63, 94, 0.2);
+            border-radius: 10px;
+            padding: 14px 18px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .security-icon {
+            font-size: 22px;
+        }
+        
+        .security-title {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--security);
+        }
+        
+        .security-text {
+            font-size: 10px;
+            color: var(--text-muted);
+            margin-top: 3px;
+        }
+        
+        .security-note {
+            font-size: 9px;
+            color: var(--text-dim);
+            margin-top: 2px;
+        }
+        
+        .risk-banner {
+            background: var(--lane-b-dim);
+            border: 1px solid rgba(245, 158, 11, 0.13);
+            border-radius: 10px;
+            padding: 12px 16px;
+        }
+        
+        .risk-title {
+            font-size: 9px;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--lane-b);
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+        
+        .risk-item {
+            font-size: 9px;
+            color: var(--text-muted);
+            padding: 3px 0;
+            display: flex;
+            gap: 6px;
+        }
+        
+        .risk-bullet {
+            color: var(--lane-b);
+        }
+        
+        .task-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 10px;
+            margin-bottom: 4px;
+            background: var(--surface-light);
+            border-radius: 6px;
+            border-left: 2px solid var(--border);
+        }
+        
+        .task-row.urgent {
+            border-left-color: var(--in-progress);
+        }
+        
+        .task-num {
+            font-size: 9px;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--text-dim);
+            width: 14px;
+        }
+        
+        .task-text {
+            font-size: 10px;
+            color: var(--text);
+            flex: 1;
+        }
+        
+        .task-urgent {
+            font-size: 7px;
+            color: var(--in-progress);
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 12px 0 4px;
+            font-size: 9px;
+            color: var(--text-dim);
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        .toggle-link {
+            cursor: pointer;
+            font-size: 10px;
+            color: var(--accent);
+            font-family: 'JetBrains Mono', monospace;
+            margin-bottom: 8px;
+        }
+        
+        .experiment-blocked {
+            font-size: 9px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+        
+        .experiment-blocked::before {
+            content: "⚠ ";
+        }
+        
+        .dashed-box {
+            border: 1px dashed var(--border);
+            border-radius: 8px;
+            padding: 10px 14px;
+            text-align: center;
+        }
+        
+        .dashed-box-text {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+        
+        .mt-2 { margin-top: 8px; }
+        .mt-4 { margin-top: 16px; }
+        .mb-2 { margin-bottom: 8px; }
+        .gap-2 { gap: 8px; }
+        .gap-4 { gap: 16px; }
+        .flex { display: flex; }
+        .flex-col { flex-direction: column; }
+        .items-center { align-items: center; }
+        .justify-center { justify-content: center; }
+        .text-center { text-align: center; }
+        .w-full { width: 100%; }
+        .h-3 { height: 12px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-subtitle">OpenClaw Council · Day 1 Progress</div>
+        <h1>Architecture & Roadmap</h1>
+        <div class="header-meta">2026-02-27 · CL2: 21 msgs · CL5: msg 29 · Sync: Dropbox COUNCIL_CHAT</div>
+        <div class="progress-bar">
+            <div class="progress-fill"></div>
+        </div>
+        <div class="progress-label">11 milestones ✓ · 2 experiment specs ✓ · nightmode scaffolded · telemetry pending</div>
+    </div>
+
+    <div class="container">
+        <!-- Milestones -->
+        <div class="section-card approved">
+            <div class="section-header">
+                <span class="section-icon">✅</span>
+                <span class="section-title">Milestones (11/11)</span>
+                <span class="status-badge approved">COMPLETE</span>
+            </div>
+            <div class="section-body">
+                <div class="toggle-link">▼ Hide</div>
+                <div class="milestone-row">
+                    <span class="milestone-id">M1.</span>
+                    <span class="milestone-dot"></span>
+                    <span class="milestone-title">Dropbox council comms established</span>
+                </div>
+                <div class="milestone-row">
+                    <span class="milestone-id">M2.</span>
+                    <span class="milestone-dot"></span>
+                    <span class="milestone-title">Overnight sprint cycles executed (17 msgs)</span>
+                </div>
+                <div class="milestone-row">
+                    <span class="milestone-id">M3.</span>
+                    <span class="milestone-dot"></span>
+                    <span class="milestone-title">Overnight wrap-up & executive summary</span>
+                </div>
+                <div class="milestone-row">
+                    <span class="milestone-id">M4.</span>
+                    <span class="milestone-dot"></span>
+                    <span class="milestone-title">Big's Day-1 directives operationalized</span>
+                </div>
+                <div class="milestone-row">
+                    <span class="milestone-id">M5.</span>
+                    <span class="milestone-dot"></span>
+                    <span class="milestone-title">Nightmode Protocol v1 approved (§1–9)</span>
+                </div>
+                <div class="milestone-row">
+                    <span class="milestone-id">M6.</span>
+                    <span class="milestone-dot"></span>
+                    <span class="milestone-title">Nightmode scaffolding created</span>
+                </div>
+                <div class="milestone-row">
+                    <span class="milestone-id">M7.</span>
+                    <span class="milestone-dot"></span>
+                    <span class="milestone-title">Stale-context mitigation formalized</span>
+                </div>
+                <div class="milestone-row">
+                    <span class="milestone-id">M8.</span>
+                    <span class="milestone-dot"></span>
+                    <span class="milestone-title">Reporting format upgraded</span>
+                </div>
+                <div class="milestone-row">
+                    <span class="milestone-id">M9.</span>
+                    <span class="milestone-dot"></span>
+                    <span class="milestone-title">Telegram proactive posting adjusted</span>
+                </div>
+                <div class="milestone-row">
+                    <span class="milestone-id">M10.</span>
+                    <span class="milestone-dot"></span>
+                    <span class="milestone-title">Safety approvals for 4 skills recorded</span>
+                </div>
+                <div class="milestone-row">
+                    <span class="milestone-id">M11.</span>
+                    <span class="milestone-dot"></span>
+                    <span class="milestone-title">CL5 AMC blocker resolved</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Architecture -->
+        <div class="section-card accent">
+            <div class="section-header">
+                <span class="section-icon">🏗</span>
+                <span class="section-title">Adopted Architecture</span>
+                <span class="status-badge approved">LOCKED</span>
+            </div>
+            <div class="section-body">
+                <div class="flow-node mb-2">
+                    <div class="flow-node-header">
+                        <span class="flow-node-label">Bi-Modal Orchestration Standard</span>
+                    </div>
+                    <div class="flow-node-sub">Lane A (Agents SDK) + Lane B (LangGraph) — standing order</div>
+                </div>
+                
+                <div class="grid-2 mb-2">
+                    <div class="flow-node lane-a">
+                        <span class="lane-badge a">LANE A</span>
+                        <div class="flow-node-label">Lane A — Adaptive</div>
+                        <div class="flow-node-sub">Triage, routing, read-only, exploratory</div>
+                    </div>
+                    <div class="flow-node lane-b">
+                        <span class="lane-badge b">LANE B</span>
+                        <div class="flow-node-label">Lane B — Assured</div>
+                        <div class="flow-node-sub">Durable execution, HITL, irreversible actions</div>
+                    </div>
+                </div>
+                
+                <div class="grid-3 mb-2">
+                    <div class="level-badge l0">
+                        <div class="level-num">LEVEL 0</div>
+                        <div class="level-label">Read-only</div>
+                        <div class="level-sub">Autonomous</div>
+                    </div>
+                    <div class="level-badge l1">
+                        <div class="level-num">LEVEL 1</div>
+                        <div class="level-label">Reversible writes</div>
+                        <div class="level-sub">Blocking guardrails</div>
+                    </div>
+                    <div class="level-badge l2">
+                        <div class="level-num">LEVEL 2</div>
+                        <div class="level-label">Irreversible / external</div>
+                        <div class="level-sub">HITL mandatory</div>
+                    </div>
+                </div>
+                
+                <div class="tag-list">
+                    <span class="tag-item">No trace = no deploy</span>
+                    <span class="tag-item">L2 approval-gated</span>
+                    <span class="tag-item">Replay-safe side effects</span>
+                    <span class="tag-item">Fail-close on ambiguity</span>
+                    <span class="tag-item">Swarm: RETIRED</span>
+                    <span class="tag-item">n8n: DEFERRED</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Arrow -->
+        <div class="arrow">
+            <span class="arrow-label">VALIDATING VIA</span>
+            <svg width="16" height="16" viewBox="0 0 16 16">
+                <path d="M8 2 L8 12 M4 9 L8 13 L12 9" stroke="#475569" stroke-width="1.5" fill="none"/>
+            </svg>
+        </div>
+
+        <!-- Experiments -->
+        <div class="section-card lane-a">
+            <div class="section-header">
+                <span class="section-icon">🧪</span>
+                <span class="section-title">Experiments Pipeline</span>
+                <span class="status-badge in-progress"><span class="pulse-dot"></span>IN PROGRESS</span>
+            </div>
+            <div class="section-body">
+                <div class="flow-node mb-2">
+                    <div class="flow-node-header">
+                        <span class="flow-node-label">E1: Risk-Level Router Bakeoff</span>
+                        <span class="status-badge pending">PENDING RUN</span>
+                    </div>
+                    <div class="flow-node-sub">Duration: 48h · Gate: Zero Level-2 misroutes</div>
+                    <div class="flow-node-sub">Owner: CL2 harness · CL5 red-team · Corpus: 180 prompts</div>
+                    <div class="experiment-blocked">Awaiting Telemetry_Pack_01</div>
+                </div>
+                
+                <div style="display: flex; justify-content: center; height: 12px;"><div style="width: 1px; height: 100%; background: var(--border);"></div></div>
+                
+                <div class="flow-node mb-2">
+                    <div class="flow-node-header">
+                        <span class="flow-node-label">E2: Handoff Contract Stress Test</span>
+                        <span class="status-badge pending">PENDING RUN</span>
+                    </div>
+                    <div class="flow-node-sub">Duration: 2 days · Gate: 0 unauthorized bypasses, ≤5% wrong-specialist</div>
+                    <div class="flow-node-sub">Owner: CL2 harness · CL5 vectors A–F · Corpus: 120 prompts</div>
+                    <div class="experiment-blocked">Awaiting Telemetry_Pack_01</div>
+                </div>
+                
+                <div style="display: flex; justify-content: center; height: 12px;"><div style="width: 1px; height: 100%; background: var(--border);"></div></div>
+                
+                <div class="flow-node mb-2">
+                    <div class="flow-node-header">
+                        <span class="flow-node-label">E3: Adversarial Guardrail Benchmark</span>
+                        <span class="status-badge queued">QUEUED</span>
+                    </div>
+                    <div class="flow-node-sub">Duration: 3 days · Gate: Any parallel pre-cancel execution → blocking permanently</div>
+                    <div class="flow-node-sub">Owner: CL5 adversarial corpus · Corpus: 150 prompts</div>
+                </div>
+                
+                <div style="display: flex; justify-content: center; height: 12px;"><div style="width: 1px; height: 100%; background: var(--border);"></div></div>
+                
+                <div class="flow-node mb-2">
+                    <div class="flow-node-header">
+                        <span class="flow-node-label">E4: Replay-Safe Mutation Drill</span>
+                        <span class="status-badge queued">QUEUED</span>
+                    </div>
+                    <div class="flow-node-sub">Duration: TBD · Gate: 0 duplicate side effects / 45 fault injections</div>
+                    <div class="flow-node-sub">Owner: Joint CL2/CL5 · Corpus: 3 workflows × 5 injections × 3 runs</div>
+                </div>
+                
+                <div style="border-top: 1px dashed var(--border); margin: 6px 0;"></div>
+                
+                <div class="flow-node">
+                    <div class="flow-node-header">
+                        <span class="flow-node-label">E5: Financial Analyst Pipeline</span>
+                        <span class="status-badge on-hold">ON HOLD</span>
+                    </div>
+                    <div class="flow-node-sub">Duration: — · Gate: Architecture validated first</div>
+                    <div class="flow-node-sub">Owner: CL5 plan · CL4 exec · CL2 validate</div>
+                    <div class="experiment-blocked">Waiting E1–E4</div>
+                </div>
+                
+                <div class="blocker-banner">
+                    <span class="blocker-icon">⏳</span>
+                    <div>
+                        <div class="blocker-label">BLOCKER B1</div>
+                        <div class="blocker-text">CL5 red-team awaiting Telemetry_Pack_01 from E1/E2 harness runs</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Arrow -->
+        <div class="arrow">
+            <span class="arrow-label">IN PARALLEL</span>
+            <svg width="16" height="16" viewBox="0 0 16 16">
+                <path d="M8 2 L8 12 M4 9 L8 13 L12 9" stroke="#475569" stroke-width="1.5" fill="none"/>
+            </svg>
+        </div>
+
+        <!-- Research -->
+        <div class="section-card pending">
+            <div class="section-header">
+                <span class="section-icon">🔬</span>
+                <span class="section-title">Research & Analysis</span>
+            </div>
+            <div class="section-body">
+                <div class="grid-2 mb-2">
+                    <div class="flow-node">
+                        <div class="flow-node-header">
+                            <span class="flow-node-label">AMC Framework Analysis</span>
+                            <span class="status-badge approved">COMPLETE</span>
+                        </div>
+                        <div class="flow-node-sub">Maturity mapping L0–L5 vs our risk tiers. Evidence ledger evaluation.</div>
+                        <div class="mt-2">
+                            <span class="artifact-tag">AMC_Analysis_Brief_v1.md</span>
+                        </div>
+                    </div>
+                    <div class="flow-node">
+                        <div class="flow-node-header">
+                            <span class="flow-node-label">Snyk Security Assessment</span>
+                            <span class="status-badge blocking"><span class="pulse-dot"></span>BLOCKING</span>
+                        </div>
+                        <div class="flow-node-sub">Credential leak vectors. BLOCKING skill installs.</div>
+                    </div>
+                </div>
+                
+                <div style="height: 8px;"></div>
+                
+                <div class="grid-2">
+                    <div class="flow-node">
+                        <div class="flow-node-header">
+                            <span class="flow-node-label">D3: Research Ops Hub</span>
+                            <span class="status-badge approved">APPROVED</span>
+                        </div>
+                        <div class="flow-node-sub">Entity-Claim Graph · source decay · triage scoring</div>
+                    </div>
+                    <div class="flow-node">
+                        <div class="flow-node-header">
+                            <span class="flow-node-label">D4: Memory Exec Assistant</span>
+                            <span class="status-badge approved">APPROVED</span>
+                        </div>
+                        <div class="flow-node-sub">Session node tree · SOTU gating · sqlite-vec</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Arrow -->
+        <div class="arrow">
+            <span class="arrow-label">FEEDS INTO</span>
+            <svg width="16" height="16" viewBox="0 0 16 16">
+                <path d="M8 2 L8 12 M4 9 L8 13 L12 9" stroke="#475569" stroke-width="1.5" fill="none"/>
+            </svg>
+        </div>
+
+        <!-- Use Cases -->
+        <div class="section-card lane-b">
+            <div class="section-header">
+                <span class="section-icon">🎯</span>
+                <span class="section-title">Use Cases</span>
+            </div>
+            <div class="section-body">
+                <div class="flow-node mb-2">
+                    <div class="flow-node-header">
+                        <span class="flow-node-label">UC1: Research Ops Hub</span>
+                        <span class="status-badge designing">DESIGNING</span>
+                    </div>
+                    <div class="flow-node-sub">Continuous monitoring, contradiction detection, scored digests</div>
+                </div>
+                <div class="flow-node mb-2">
+                    <div class="flow-node-header">
+                        <span class="flow-node-label">UC2: Memory-Driven Executive Assistant</span>
+                        <span class="status-badge designing">DESIGNING</span>
+                    </div>
+                    <div class="flow-node-sub">Cross-channel context, preference learning, local-first memory</div>
+                </div>
+                <div class="flow-node mb-2">
+                    <div class="flow-node-header">
+                        <span class="flow-node-label">UC3: Autonomous Incident Responder</span>
+                        <span class="status-badge approved">APPROVED</span>
+                    </div>
+                    <div class="flow-node-sub">Lane A CVE watcher → Lane B patch drafter with HITL approval</div>
+                </div>
+                <div class="dashed-box">
+                    <span class="dashed-box-text">3–4 more use cases needed — discovery ongoing</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Arrow -->
+        <div class="arrow">
+            <span class="arrow-label">ENABLING</span>
+            <svg width="16" height="16" viewBox="0 0 16 16">
+                <path d="M8 2 L8 12 M4 9 L8 13 L12 9" stroke="#475569" stroke-width="1.5" fill="none"/>
+            </svg>
+        </div>
+
+        <!-- Nightmode -->
+        <div class="section-card nightmode">
+            <div class="section-header">
+                <span class="section-icon">🌙</span>
+                <span class="section-title">Nightmode Protocol</span>
+                <span class="status-badge scaffolded">SCAFFOLDED</span>
+            </div>
+            <div class="section-body">
+                <div class="flow-node">
+                    <div class="flow-node-header">
+                        <span class="flow-node-label">"nightmode activated"</span>
+                        <span class="status-badge in-progress"><span class="pulse-dot"></span>IN PROGRESS</span>
+                    </div>
+                    <div class="flow-node-sub">Protocol v1 approved (§1–9). Runbook + digest template + council state register created.</div>
+                    <div class="flow-node-sub">Activation-to-cron wiring in progress.</div>
+                    <div class="progress-bar" style="margin-top: 8px;">
+                        <div class="progress-fill" style="width: 65%; background: var(--nightmode);"></div>
+                    </div>
+                    <div style="font-size: 8px; color: var(--text-dim); margin-top: 4px; font-family: 'JetBrains Mono', monospace;">
+                        spec ✓ · scaffold ✓ · stale-context fix ✓ · cron wiring pending · fail-close pending
+                    </div>
+                </div>
+                
+                <div class="grid-4 mt-2">
+                    <div style="background: var(--surface-light); border-radius: 6px; padding: 8px 6px; text-align: center; border: 1px solid var(--nightmode);">
+                        <div style="font-size: 16px;">🔄</div>
+                        <div style="font-size: 8px; color: var(--text-muted); margin-top: 3px; line-height: 1.3;">Research<br>Sprints</div>
+                        <div style="font-size: 7px; color: var(--nightmode); margin-top: 2px; font-family: 'JetBrains Mono', monospace;">DESIGNED</div>
+                    </div>
+                    <div style="background: var(--surface-light); border-radius: 6px; padding: 8px 6px; text-align: center; border: 1px solid var(--border);">
+                        <div style="font-size: 16px;">📡</div>
+                        <div style="font-size: 8px; color: var(--text-muted); margin-top: 3px; line-height: 1.3;">Source<br>Monitoring</div>
+                        <div style="font-size: 7px; color: var(--text-dim); margin-top: 2px; font-family: 'JetBrains Mono', monospace;">PENDING</div>
+                    </div>
+                    <div style="background: var(--surface-light); border-radius: 6px; padding: 8px 6px; text-align: center; border: 1px solid var(--border);">
+                        <div style="font-size: 16px;">🛡</div>
+                        <div style="font-size: 8px; color: var(--text-muted); margin-top: 3px; line-height: 1.3;">Infra<br>Healthcheck</div>
+                        <div style="font-size: 7px; color: var(--text-dim); margin-top: 2px; font-family: 'JetBrains Mono', monospace;">PENDING</div>
+                    </div>
+                    <div style="background: var(--surface-light); border-radius: 6px; padding: 8px 6px; text-align: center; border: 1px solid var(--nightmode);">
+                        <div style="font-size: 16px;">📋</div>
+                        <div style="font-size: 8px; color: var(--text-muted); margin-top: 3px; line-height: 1.3;">Morning<br>Digest</div>
+                        <div style="font-size: 7px; color: var(--nightmode); margin-top: 2px; font-family: 'JetBrains Mono', monospace;">DESIGNED</div>
+                    </div>
+                </div>
+                
+                <div class="mt-2" style="display: flex; gap: 4; flex-wrap: wrap;">
+                    <span class="artifact-tag">NIGHTMODE_PROTOCOL_v1.md</span>
+                    <span class="artifact-tag">NIGHTMODE_RUNBOOK.md</span>
+                    <span class="artifact-tag">NIGHTMODE_DIGEST_TEMPLATE.md</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ownership -->
+        <div class="grid-2">
+            <div class="owner-card">
+                <div class="owner-header">
+                    <span class="owner-name cl2">CL2 — BUILDER</span>
+                    <span class="owner-count">21 msgs</span>
+                </div>
+                <div class="owner-tasks">
+                    Experiment harnesses & specs<br>
+                    Pass/fail scorecards<br>
+                    Nightmode scaffolding<br>
+                    AMC analysis brief ✓<br>
+                    Council state register ✓
+                </div>
+            </div>
+            <div class="owner-card">
+                <div class="owner-header">
+                    <span class="owner-name cl5">CL5 — BREAKER</span>
+                    <span class="owner-count">msg 29</span>
+                </div>
+                <div class="owner-tasks">
+                    Adversarial vectors A–F<br>
+                    Red-team reporting<br>
+                    D3/D4 blueprints<br>
+                    Incident Responder UC ✓<br>
+                    ⏳ Awaiting telemetry
+                </div>
+            </div>
+        </div>
+
+        <!-- Security Gate -->
+        <div class="security-gate">
+            <span class="security-icon">⛔</span>
+            <div style="flex: 1;">
+                <div class="security-title">SKILL INSTALLATION BLOCKED</div>
+                <div class="security-text">Proactive Agent · Self-improving Agent · Browser Use · Agent Browser</div>
+                <div class="security-note">Snyk assessment required · Skills recorded in profile (M10)</div>
+            </div>
+        </div>
+
+        <!-- Artifacts -->
+        <div class="section-card">
+            <div class="section-header" style="color: var(--text-muted);">
+                <span class="section-icon">📦</span>
+                <span class="section-title" style="color: var(--text-muted);">Deliverables & Artifacts</span>
+            </div>
+            <div class="section-body">
+                <div style="margin-bottom: 12px;">
+                    <div style="font-size: 9px; font-weight: 700; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; margin-bottom: 4px;">Protocols</div>
+                    <div style="display: flex; gap: 4; flex-wrap: wrap;">
+                        <span class="artifact-tag">NIGHTMODE_PROTOCOL_v1.md</span>
+                        <span class="artifact-tag">NIGHTMODE_RUNBOOK.md</span>
+                        <span class="artifact-tag">NIGHTMODE_DIGEST_TEMPLATE.md</span>
+                    </div>
+                </div>
+                <div style="margin-bottom: 12px;">
+                    <div style="font-size: 9px; font-weight: 700; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; margin-bottom: 4px;">Coordination</div>
+                    <div style="display: flex; gap: 4; flex-wrap: wrap;">
+                        <span class="artifact-tag">COUNCIL_STATE.json</span>
+                        <span class="artifact-tag">CL2_Message_18–21.txt</span>
+                    </div>
+                </div>
+                <div style="margin-bottom: 12px;">
+                    <div style="font-size: 9px; font-weight: 700; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; margin-bottom: 4px;">Experiments</div>
+                    <div style="display: flex; gap: 4; flex-wrap: wrap;">
+                        <span class="artifact-tag">EXPERIMENT_01_RISK_ROUTER_BAKEOFF.md</span>
+                        <span class="artifact-tag">EXPERIMENT_02_HANDOFF_CONTRACT_STRESS.md</span>
+                    </div>
+                </div>
+                <div>
+                    <div style="font-size: 9px; font-weight: 700; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; margin-bottom: 4px;">Analysis</div>
+                    <div style="display: flex; gap: 4; flex-wrap: wrap;">
+                        <span class="artifact-tag">AMC_Analysis_Brief_v1.md</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Next 24h -->
+        <div class="section-card in-progress">
+            <div class="section-header">
+                <span class="section-icon">⚡</span>
+                <span class="section-title">Next 24 Hours</span>
+                <span class="status-badge in-progress"><span class="pulse-dot"></span>IN PROGRESS</span>
+            </div>
+            <div class="section-body">
+                <div class="task-row urgent">
+                    <span class="task-num">1.</span>
+                    <span class="task-text">Run E1/E2 harnesses → publish Telemetry_Pack_01</span>
+                    <span class="task-urgent">URGENT</span>
+                </div>
+                <div class="task-row urgent">
+                    <span class="task-num">2.</span>
+                    <span class="task-text">CL5 threshold feedback → consolidate v1.1</span>
+                    <span class="task-urgent">URGENT</span>
+                </div>
+                <div class="task-row">
+                    <span class="task-num">3.</span>
+                    <span class="task-text">Wire Nightmode activation/deactivation to cron</span>
+                </div>
+                <div class="task-row">
+                    <span class="task-num">4.</span>
+                    <span class="task-text">Validate post-activation audit + fail-close</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Risks -->
+        <div class="risk-banner">
+            <div class="risk-title">⚠ ACTIVE RISKS</div>
+            <div class="risk-item">
+                <span class="risk-bullet">·</span>
+                <span>Telemetry delay slows CL5 adversarial analysis pipeline</span>
+            </div>
+            <div class="risk-item">
+                <span class="risk-bullet">·</span>
+                <span>Threshold ambiguity can cause experiment interpretation drift</span>
+            </div>
+            <div class="risk-item">
+                <span class="risk-bullet">·</span>
+                <span>Nightmode automation not yet fully wired end-to-end</span>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            Click experiments for details · Expand milestones & artifacts
+        </div>
+    </div>
+</body>
+</html>
